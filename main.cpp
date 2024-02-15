@@ -46,9 +46,17 @@ public:
         if (addSegment)
         {
             addSegment = false;
-        } else {
+        }
+        else
+        {
             body.pop_back();
         }
+    }
+
+    void reset()
+    {
+        body = {Vector2{10, 10}, Vector2{10, 11}, Vector2{10, 12}};
+        direction = {1, 0};
     }
 };
 
@@ -97,11 +105,17 @@ class Game
 public:
     Snake snake = Snake();
     Food food = Food(snake.body);
+    bool running = true;
 
     void update()
     {
+        if (!running)
+        {
+            return;
+        }
         snake.update();
         checkFoodCollision();
+        checkEdgesCollision();
     }
 
     void draw()
@@ -117,6 +131,21 @@ public:
             food.position = food.generateRandomPosition(snake.body);
             snake.addSegment = true;
         }
+    }
+
+    void checkEdgesCollision()
+    {
+        if (snake.body.front().x < 0 || snake.body.front().x >= cellCount || snake.body.front().y < 0 || snake.body.front().y >= cellCount)
+        {
+            gameOver();
+        }
+    }
+
+    void gameOver()
+    {
+        snake.reset();
+        food.position = food.generateRandomPosition(snake.body);
+        running = false;
     }
 };
 
@@ -139,18 +168,22 @@ int main()
         if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1)
         {
             game.snake.direction = {0, -1};
+            game.running = true;
         }
         else if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1)
         {
             game.snake.direction = {0, 1};
+            game.running = true;
         }
         else if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1)
         {
             game.snake.direction = {-1, 0};
+            game.running = true;
         }
         else if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1)
         {
             game.snake.direction = {1, 0};
+            game.running = true;
         }
 
         ClearBackground(green);
