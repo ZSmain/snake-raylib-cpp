@@ -69,7 +69,7 @@ public:
 
     Food(deque<Vector2> snakeBody)
     {
-        Image image = LoadImage("graphics/food.png");
+        Image image = LoadImage("assets/graphics/food.png");
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
         position = generateRandomPosition(snakeBody);
@@ -106,8 +106,29 @@ class Game
 public:
     Snake snake = Snake();
     Food food = Food(snake.body);
+
     bool running = true;
     int score = 0;
+
+    Sound eatSound;
+    Sound collisionSound;
+
+    Game()
+    {
+        InitAudioDevice();
+        eatSound = LoadSound("assets/sounds/eat.wav");
+        collisionSound = LoadSound("assets/sounds/collision.wav");
+
+        SetSoundVolume(eatSound, 0.5);
+        SetSoundVolume(collisionSound, 0.5);
+    }
+
+    ~Game()
+    {
+        UnloadSound(eatSound);
+        UnloadSound(collisionSound);
+        CloseAudioDevice();
+    }
 
     void update()
     {
@@ -134,6 +155,7 @@ public:
             food.position = food.generateRandomPosition(snake.body);
             snake.addSegment = true;
             score++;
+            PlaySound(eatSound);
         }
     }
 
@@ -162,6 +184,7 @@ public:
         food.position = food.generateRandomPosition(snake.body);
         running = false;
         score = 0;
+        PlaySound(collisionSound);
     }
 };
 
