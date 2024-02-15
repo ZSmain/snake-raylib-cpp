@@ -116,8 +116,8 @@ public:
     Game()
     {
         InitAudioDevice();
-        eatSound = LoadSound("assets/sounds/eat.wav");
-        collisionSound = LoadSound("assets/sounds/collision.wav");
+        eatSound = LoadSound("assets/sounds/eat.mp3");
+        collisionSound = LoadSound("assets/sounds/collision.mp3");
 
         SetSoundVolume(eatSound, 0.5);
         SetSoundVolume(collisionSound, 0.5);
