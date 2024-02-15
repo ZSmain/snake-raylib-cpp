@@ -1,40 +1,121 @@
 #include <iostream>
 #include <raylib.h>
+#include <deque>
 
 using namespace std;
 
-int main () {
+Color green = {173, 204, 96, 255};
+Color darkGreen = {43, 51, 24, 255};
 
-    const int screenWidth = 800;
-    const int screenHeight = 600;
-    int ball_x = 100;
-    int ball_y = 100;
-    int ball_speed_x = 5;
-    int ball_speed_y = 5;
-    int ball_radius = 15;
+int cellSize = 30;
+int cellCount = 25;
 
-    cout << "Hello World" << endl;
+double lastUpdateTime = 0;
 
-    InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
+double eventTriggered(double interval)
+{
+    double currentTime = GetTime();
+    if (currentTime - lastUpdateTime >= interval)
+    {
+        lastUpdateTime = currentTime;
+        return true;
+    }
+    return false;
+}
+
+class Snake
+{
+public:
+    deque<Vector2> body = {Vector2{10, 10}, Vector2{10, 11}, Vector2{10, 12}};
+    Vector2 direction = {1, 0};
+
+    void draw()
+    {
+        float fCellSize = static_cast<float>(cellSize);
+        for (auto &cell : body)
+        {
+            Rectangle segment = Rectangle{cell.x * cellSize, cell.y * cellSize, fCellSize, fCellSize};
+            DrawRectangleRounded(segment, 0.15, 0, darkGreen);
+        }
+    }
+
+    void update()
+    {
+        Vector2 newHead = {body.front().x + direction.x, body.front().y + direction.y};
+        body.push_front(newHead);
+        body.pop_back();
+    }
+};
+
+class Food
+{
+public:
+    Vector2 position;
+    Texture2D texture;
+
+    Food()
+    {
+        Image image = LoadImage("graphics/food.png");
+        texture = LoadTextureFromImage(image);
+        UnloadImage(image);
+        randomizePosition();
+    }
+
+    void draw()
+    {
+        DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
+    }
+
+    void randomizePosition()
+    {
+        position.x = GetRandomValue(0, cellCount - 1);
+        position.y = GetRandomValue(0, cellCount - 1);
+    }
+
+    ~Food()
+    {
+        UnloadTexture(texture);
+    }
+};
+
+int main()
+{
+    InitWindow(cellSize * cellCount, cellSize * cellCount, "Retro Snake");
     SetTargetFPS(60);
 
-    while (WindowShouldClose() == false){
+    Food food;
+    Snake snake;
+
+    while (!WindowShouldClose())
+    {
         BeginDrawing();
-        ClearBackground(BLACK);
-        ball_x += ball_speed_x;
-        ball_y += ball_speed_y;
 
-        if(ball_x + ball_radius >= screenWidth  || ball_x - ball_radius <= 0)
+        if (eventTriggered(0.2))
         {
-            ball_speed_x *= -1;
+            snake.update();
         }
 
-        if(ball_y + ball_radius >= screenHeight  || ball_y - ball_radius <= 0)
+        if (IsKeyPressed(KEY_UP) && snake.direction.y != 1)
         {
-            ball_speed_y *= -1;
+            snake.direction = {0, -1};
+        }
+        else if (IsKeyPressed(KEY_DOWN) && snake.direction.y != -1)
+        {
+            snake.direction = {0, 1};
+        }
+        else if (IsKeyPressed(KEY_LEFT) && snake.direction.x != 1)
+        {
+            snake.direction = {-1, 0};
+        }
+        else if (IsKeyPressed(KEY_RIGHT) && snake.direction.x != -1)
+        {
+            snake.direction = {1, 0};
         }
 
-        DrawCircle(ball_x,ball_y,ball_radius, WHITE);
+        ClearBackground(green);
+        food.draw();
+        snake.draw();
+
         EndDrawing();
     }
 
