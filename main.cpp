@@ -115,7 +115,8 @@ public:
         }
         snake.update();
         checkFoodCollision();
-        checkEdgesCollision();
+        checkEdgeCollision();
+        checkSelfCollision();
     }
 
     void draw()
@@ -133,11 +134,22 @@ public:
         }
     }
 
-    void checkEdgesCollision()
+    void checkEdgeCollision()
     {
         if (snake.body.front().x < 0 || snake.body.front().x >= cellCount || snake.body.front().y < 0 || snake.body.front().y >= cellCount)
         {
             gameOver();
+        }
+    }
+
+    void checkSelfCollision()
+    {
+        for (int i = 1; i < snake.body.size(); i++)
+        {
+            if (snake.body.front().x == snake.body[i].x && snake.body.front().y == snake.body[i].y)
+            {
+                gameOver();
+            }
         }
     }
 
