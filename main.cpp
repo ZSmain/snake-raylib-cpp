@@ -107,6 +107,7 @@ public:
     Snake snake = Snake();
     Food food = Food(snake.body);
     bool running = true;
+    int score = 0;
 
     void update()
     {
@@ -132,6 +133,7 @@ public:
         {
             food.position = food.generateRandomPosition(snake.body);
             snake.addSegment = true;
+            score++;
         }
     }
 
@@ -159,6 +161,7 @@ public:
         snake.reset();
         food.position = food.generateRandomPosition(snake.body);
         running = false;
+        score = 0;
     }
 };
 
@@ -201,7 +204,8 @@ int main()
 
         ClearBackground(green);
         DrawRectangleLinesEx(Rectangle{(float)offset - 5, (float)offset - 5, (float)cellCount * cellSize + 10, (float)cellCount * cellSize + 10}, 5, darkGreen);
-        DrawText("Retro Snake", offset -5, 20, 40, darkGreen);
+        DrawText("Retro Snake", offset - 5, 20, 40, darkGreen);
+        DrawText(TextFormat("Score: %i", game.score), offset - 5, offset + cellSize * cellCount + 10, 40, darkGreen);
         game.draw();
 
         EndDrawing();
