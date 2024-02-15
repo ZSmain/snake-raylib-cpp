@@ -28,6 +28,7 @@ class Snake
 public:
     deque<Vector2> body = {Vector2{10, 10}, Vector2{10, 11}, Vector2{10, 12}};
     Vector2 direction = {1, 0};
+    bool addSegment = false;
 
     void draw()
     {
@@ -41,9 +42,13 @@ public:
 
     void update()
     {
-        Vector2 newHead = {body.front().x + direction.x, body.front().y + direction.y};
-        body.push_front(newHead);
-        body.pop_back();
+        body.push_front({body.front().x + direction.x, body.front().y + direction.y});
+        if (addSegment)
+        {
+            addSegment = false;
+        } else {
+            body.pop_back();
+        }
     }
 };
 
@@ -110,6 +115,7 @@ public:
         if (snake.body.front().x == food.position.x && snake.body.front().y == food.position.y)
         {
             food.position = food.generateRandomPosition(snake.body);
+            snake.addSegment = true;
         }
     }
 };
