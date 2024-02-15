@@ -58,7 +58,7 @@ public:
         Image image = LoadImage("graphics/food.png");
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
-        randomizePosition();
+        position = generateRandomPosition();
     }
 
     void draw()
@@ -66,10 +66,12 @@ public:
         DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
     }
 
-    void randomizePosition()
+    Vector2 generateRandomPosition()
     {
-        position.x = GetRandomValue(0, cellCount - 1);
-        position.y = GetRandomValue(0, cellCount - 1);
+        float x = GetRandomValue(0, cellCount - 1);
+        float y = GetRandomValue(0, cellCount - 1);
+
+        return Vector2{x, y};
     }
 
     ~Food()
