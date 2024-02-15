@@ -78,13 +78,30 @@ public:
     }
 };
 
+class Game
+{
+public:
+    Snake snake;
+    Food food;
+
+    void update()
+    {
+        snake.update();
+    }
+
+    void draw()
+    {
+        food.draw();
+        snake.draw();
+    }
+};
+
 int main()
 {
     InitWindow(cellSize * cellCount, cellSize * cellCount, "Retro Snake");
     SetTargetFPS(60);
 
-    Food food;
-    Snake snake;
+    Game game = Game();
 
     while (!WindowShouldClose())
     {
@@ -92,29 +109,28 @@ int main()
 
         if (eventTriggered(0.2))
         {
-            snake.update();
+            game.update();
         }
 
-        if (IsKeyPressed(KEY_UP) && snake.direction.y != 1)
+        if (IsKeyPressed(KEY_UP) && game.snake.direction.y != 1)
         {
-            snake.direction = {0, -1};
+            game.snake.direction = {0, -1};
         }
-        else if (IsKeyPressed(KEY_DOWN) && snake.direction.y != -1)
+        else if (IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1)
         {
-            snake.direction = {0, 1};
+            game.snake.direction = {0, 1};
         }
-        else if (IsKeyPressed(KEY_LEFT) && snake.direction.x != 1)
+        else if (IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1)
         {
-            snake.direction = {-1, 0};
+            game.snake.direction = {-1, 0};
         }
-        else if (IsKeyPressed(KEY_RIGHT) && snake.direction.x != -1)
+        else if (IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1)
         {
-            snake.direction = {1, 0};
+            game.snake.direction = {1, 0};
         }
 
         ClearBackground(green);
-        food.draw();
-        snake.draw();
+        game.draw();
 
         EndDrawing();
     }
