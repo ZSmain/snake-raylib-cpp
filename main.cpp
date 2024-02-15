@@ -53,12 +53,12 @@ public:
     Vector2 position;
     Texture2D texture;
 
-    Food()
+    Food(deque<Vector2> snakeBody)
     {
         Image image = LoadImage("graphics/food.png");
         texture = LoadTextureFromImage(image);
         UnloadImage(image);
-        position = generateRandomPosition();
+        position = generateRandomPosition(snakeBody);
     }
 
     void draw()
@@ -66,11 +66,18 @@ public:
         DrawTexture(texture, position.x * cellSize, position.y * cellSize, WHITE);
     }
 
-    Vector2 generateRandomPosition()
+    Vector2 generateRandomPosition(deque<Vector2> snakeBody)
     {
         float x = GetRandomValue(0, cellCount - 1);
         float y = GetRandomValue(0, cellCount - 1);
 
+        for (auto &segment : snakeBody)
+        {
+            if (segment.x == x && segment.y == y)
+            {
+                return generateRandomPosition(snakeBody);
+            }
+        }
         return Vector2{x, y};
     }
 
@@ -83,18 +90,27 @@ public:
 class Game
 {
 public:
-    Snake snake;
-    Food food;
+    Snake snake = Snake();
+    Food food = Food(snake.body);
 
     void update()
     {
         snake.update();
+        checkFoodCollision();
     }
 
     void draw()
     {
         food.draw();
         snake.draw();
+    }
+
+    void checkFoodCollision()
+    {
+        if (snake.body.front().x == food.position.x && snake.body.front().y == food.position.y)
+        {
+            food.position = food.generateRandomPosition(snake.body);
+        }
     }
 };
 
